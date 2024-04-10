@@ -8,3 +8,6 @@
 
 # fichier CSV #
 *.csv
+
+# fichier TXT #
+*.TXT
