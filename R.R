@@ -24,16 +24,20 @@ D6 <- X2023_09_29_ParacouP15AllYears
 D7 <- X2023_09_29_ParacouP16AllYears
 summary(D1)
 
+library(tidyverse)
+
+
 #----
 
 # Choix des plots ---------
 # On veut des endroits non atteint par l'homme 
 # Plot 1,6 et 11 contrôle --> pas de perturbation ? 
 # Plot 13, 14, 15 et 16 biodiversity plots 
+# Donc on les prend tous (plots 16 plus grands que les autres)
 
 #----
 
-# Création d'un tableau de donné data fragme pour test -----
+# Création d'un tableau de donné data frame pour test -----
 
 DT <- data.frame(D1$Xfield,D1$Yfield,D1$Family ,D1$Genus,D1$Species,D1$Circ) 
  DX <- matrix(data = DT, nrow = 20)  
@@ -54,27 +58,74 @@ unique(DT$D1.Species)
 unique(DT$D1.Genus)
 unique(DT$D1.Family)
 
-help()
-?
-  
 #----
   
 # On va maintenent chercher à observer celon l'années # -----
 # celon les espèces et/ou genre / famille #
 
-A <- D1( )
+# Réduction des données à l'année la plus récente (2022)
 
-%%
-  
-  
+D1 |> 
+  bind_rows(D2) |> 
+  bind_rows(D3) |> 
+  bind_rows(D4) |> 
+  bind_rows(D5) |> 
+  bind_rows(D6) |> 
+  bind_rows(D7) |> 
+  print() ->
+  paracou
 
-species <- X2023_09_29_ParacouP14AllYears 
+paracou |> 
+  filter(CensusYear == 2022) |> 
+  print() ->
+  paracou_2022
+
+# éliminations des colonnes qui nous intéresse pas
+
+paracou_2022 %>% 
+  # Sélection des données botaniques et de parcelle
+  select(idTree, Family:Species, Plot,Xfield,Yfield,CircCorr) |> 
+  # Création de la variable espèce
+  mutate(espece = paste(Genus, Species)) |>
+  print() -> 
+  paracou_2022_sp
+
+paracou_2022_sp %>% 
+  #Comptage des arbres
+  group_by(espece) |> 
+  summarise(abondance = n()) |> 
+  # Tri par abondance décroissante
+  arrange(desc(abondance)) |> 
+  # Affichage des 5 premières
+  head(n = 10)
+
+# On peut voir que sur nos 23663 individus observés il y en a 1702 indet 
+# Ce qui représente presque/quasiment 14% de nos données 
+
+#graphique (histogramme) abondance par N abondance 
+# on constate qu'une majorité d'espèces avec peut individus
+# es ce qualitatif de faire leur ISAR ? pas assez individus 
 
 sort (table (paste (D1$CensusYear == 2022,y)))
 
 #-----
  
 # Mise en place des données pour permêtre de def la diversité du site -----
+
+#Comment on prend en compte les espèces non identifié ?
+# les prendre en comptes ? 
+
+paracou_2022_sp %>% 
+  group_by(espece) |> 
+  summarise(abondance = n()) |>
+  print() ->
+  nb_sp
+
+
+# 520 lignes soit 519 espèces identifié 
+# On a  23663 individus pour 519 espèces et 62,5 hectare soit 625k m2  
+
+
 
 # -----
 
@@ -88,7 +139,14 @@ sort (table (paste (D1$CensusYear == 2022,y)))
 # variation de r combien comment ? #
 # ISAR nombre attendu d'espèces dans les zones circulaires autour d'un individu arbitraire#
 ((X-X1)^2+(Y-Y1)^2)< r^2 -> une liste, puis compter les n espèces de la liste  
-calcul pour l-espèce puis compiler pour toutes les espèces faire un graphique 
+calcul pour l-espèce puis compiler pour toutes les espèces faire un graphique
+# avec X valeur de 1 à 50 qui corespond au rayon du cercle 
+
+#SAR du site et sar des individues 
+#Graphique ISAR en faction de la surface 
+valeur ISAR, valeur surface= Pi*r^2
+
+
 
 # ----
 
@@ -98,3 +156,73 @@ calcul pour l-espèce puis compiler pour toutes les espèces faire un graphique
 # corespondente à 
 
 # ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
